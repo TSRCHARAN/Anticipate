@@ -1,0 +1,6 @@
+{
+  "name": "Proactive Ordering Agent",
+  "description": "An intelligent predictive order suggester built for Swiggy Builders Club using dual-engine event and grocery consumption analysis triggers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
