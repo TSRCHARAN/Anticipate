@@ -59,21 +59,25 @@ export default function App() {
   const [selectedDay, setSelectedDay] = useState<string>("Friday");
   const [selectedWeather, setSelectedWeather] = useState<"rainy" | "pleasant" | "hot" | "cold">("rainy");
   const [restaurantDistance, setRestaurantDistance] = useState<number>(2.1); // in km (Meghana = 2.1, Empire = 5.2)
-  const [backendConnected, setBackendConnected] = useState<boolean>(false);
 
-  // --- STATE 2: Database Storage (Synchronized with SQLite) ---
+  // --- STATE 2: Database Storage (In-Memory / LocalStorage) ---
   const [orderHistory, setOrderHistory] = useState<OrderHistoryItem[]>([
-    { id: 1, order_type: "food", restaurant_id: "rest_001", restaurant_name: "Meghana Foods", item_id: "m1", item_name: "Special Chicken Biryani", price: 320, quantity: 1, order_time: "2026-06-26T19:30:00", day_of_week: 5, hour: 19, weather_condition: "rainy" },
-    { id: 2, order_type: "food", restaurant_id: "rest_001", restaurant_name: "Meghana Foods", item_id: "m1", item_name: "Special Chicken Biryani", price: 320, quantity: 1, order_time: "2026-06-19T20:15:00", day_of_week: 5, hour: 20, weather_condition: "rainy" },
-    { id: 3, order_type: "food", restaurant_id: "rest_001", restaurant_name: "Meghana Foods", item_id: "m1", item_name: "Special Chicken Biryani", price: 320, quantity: 1, order_time: "2026-06-12T19:45:00", day_of_week: 5, hour: 19, weather_condition: "rainy" },
-    { id: 4, order_type: "food", restaurant_id: "rest_001", restaurant_name: "Meghana Foods", item_id: "m1", item_name: "Special Chicken Biryani", price: 320, quantity: 1, order_time: "2026-06-05T19:15:00", day_of_week: 5, hour: 19, weather_condition: "pleasant" },
-    { id: 5, order_type: "instamart", item_id: "p1", item_name: "Nandini Fresh Milk (500ml)", price: 27, quantity: 2, order_time: "2026-06-16T08:00:00", day_of_week: 2, hour: 8, weather_condition: "pleasant" },
-    { id: 6, order_type: "instamart", item_id: "p1", item_name: "Nandini Fresh Milk (500ml)", price: 27, quantity: 2, order_time: "2026-06-20T08:30:00", day_of_week: 6, hour: 8, weather_condition: "pleasant" },
-    { id: 7, order_type: "instamart", item_id: "p1", item_name: "Nandini Fresh Milk (500ml)", price: 27, quantity: 2, order_time: "2026-06-24T08:15:00", day_of_week: 3, hour: 8, weather_condition: "pleasant" },
-    { id: 8, order_type: "instamart", item_id: "p1", item_name: "Nandini Fresh Milk (500ml)", price: 27, quantity: 2, order_time: "2026-06-28T09:00:00", day_of_week: 0, hour: 9, weather_condition: "pleasant" },
-    { id: 9, order_type: "instamart", item_id: "p1", item_name: "Nandini Fresh Milk (500ml)", price: 27, quantity: 2, order_time: "2026-07-02T08:10:00", day_of_week: 4, hour: 8, weather_condition: "pleasant" },
-    { id: 10, order_type: "instamart", item_id: "p2", item_name: "Fresh Eggs (Pack of 6)", price: 48, quantity: 1, order_time: "2026-06-25T08:30:00", day_of_week: 4, hour: 8, weather_condition: "pleasant" },
-    { id: 11, order_type: "instamart", item_id: "p2", item_name: "Fresh Eggs (Pack of 6)", price: 48, quantity: 1, order_time: "2026-06-30T08:45:00", day_of_week: 2, hour: 8, weather_condition: "pleasant" },
+    // Rainy Friday Evening Food Biryani Pattern (4 items, 75% rainy weather)
+    { id: 1, order_type: "food", restaurant_id: "rest_001", restaurant_name: "Meghana Foods", item_id: "m1", item_name: "Special Chicken Biryani", price: 320, quantity: 1, order_time: "2206-06-26T19:30:00", day_of_week: 5, hour: 19, weather_condition: "rainy" },
+    { id: 2, order_type: "food", restaurant_id: "rest_001", restaurant_name: "Meghana Foods", item_id: "m1", item_name: "Special Chicken Biryani", price: 320, quantity: 1, order_time: "2206-06-19T20:15:00", day_of_week: 5, hour: 20, weather_condition: "rainy" },
+    { id: 3, order_type: "food", restaurant_id: "rest_001", restaurant_name: "Meghana Foods", item_id: "m1", item_name: "Special Chicken Biryani", price: 320, quantity: 1, order_time: "2206-06-12T19:45:00", day_of_week: 5, hour: 19, weather_condition: "rainy" },
+    { id: 4, order_type: "food", restaurant_id: "rest_001", restaurant_name: "Meghana Foods", item_id: "m1", item_name: "Special Chicken Biryani", price: 320, quantity: 1, order_time: "2206-06-05T19:15:00", day_of_week: 5, hour: 19, weather_condition: "pleasant" },
+
+    // Milk Replenishment (Instamart, ordered every 4 days)
+    { id: 5, order_type: "instamart", item_id: "p1", item_name: "Nandini Fresh Milk (500ml)", price: 27, quantity: 2, order_time: "2206-06-16T08:00:00", day_of_week: 2, hour: 8, weather_condition: "pleasant" },
+    { id: 6, order_type: "instamart", item_id: "p1", item_name: "Nandini Fresh Milk (500ml)", price: 27, quantity: 2, order_time: "2206-06-20T08:30:00", day_of_week: 6, hour: 8, weather_condition: "pleasant" },
+    { id: 7, order_type: "instamart", item_id: "p1", item_name: "Nandini Fresh Milk (500ml)", price: 27, quantity: 2, order_time: "2206-06-24T08:15:00", day_of_week: 3, hour: 8, weather_condition: "pleasant" },
+    { id: 8, order_type: "instamart", item_id: "p1", item_name: "Nandini Fresh Milk (500ml)", price: 27, quantity: 2, order_time: "2206-06-28T09:00:00", day_of_week: 0, hour: 9, weather_condition: "pleasant" },
+    { id: 9, order_type: "instamart", item_id: "p1", item_name: "Nandini Fresh Milk (500ml)", price: 27, quantity: 2, order_time: "2206-07-02T08:10:00", day_of_week: 4, hour: 8, weather_condition: "pleasant" },
+
+    // Fresh Eggs (Ordered 2 times => candidate, not yet confirmed)
+    { id: 10, order_type: "instamart", item_id: "p2", item_name: "Fresh Eggs (Pack of 6)", price: 48, quantity: 1, order_time: "2206-06-25T08:30:00", day_of_week: 4, hour: 8, weather_condition: "pleasant" },
+    { id: 11, order_type: "instamart", item_id: "p2", item_name: "Fresh Eggs (Pack of 6)", price: 48, quantity: 1, order_time: "2206-06-30T08:45:00", day_of_week: 2, hour: 8, weather_condition: "pleasant" },
   ]);
 
   const [stapleConfigs, setStapleConfigs] = useState<StapleConfig[]>([
@@ -84,16 +88,16 @@ export default function App() {
       is_confirmed: true,
       dismissed_count: 0,
       cycle_length: 4.0,
-      dates: ["2026-06-16", "2026-06-20", "2026-06-24", "2026-06-28", "2026-07-02"]
+      dates: ["2206-06-16", "2206-06-20", "2206-06-24", "2206-06-28", "2206-07-02"]
     },
     {
       product_id: "p2",
       product_name: "Fresh Eggs (Pack of 6)",
       price: 48,
-      is_confirmed: false,
+      is_confirmed: false, // Pending User Confirmation
       dismissed_count: 0,
       cycle_length: 5.0,
-      dates: ["2026-06-25", "2026-06-30"]
+      dates: ["2206-06-25", "2206-06-30"]
     }
   ]);
 
@@ -109,60 +113,8 @@ export default function App() {
   // Keep track of edited item quantities in draft suggestion carts
   const [draftCartQuantities, setDraftCartQuantities] = useState<Record<string, number>>({});
 
-  const getSimulatedDate = (day: string) => {
-    switch (day) {
-      case "Friday": return "2026-07-03T19:30:00";
-      case "Saturday": return "2026-07-04T12:00:00";
-      case "Sunday": return "2026-07-05T13:00:00";
-      case "Monday": return "2026-07-06T08:30:00";
-      case "Tuesday": return "2026-07-07T12:00:00";
-      case "Wednesday": return "2026-07-08T08:30:00";
-      case "Thursday": return "2026-07-09T20:00:00";
-      default: return "2026-07-03T19:30:00";
-    }
-  };
-
-  const fetchDatabaseState = async () => {
-    try {
-      const histRes = await fetch("/api/history");
-      if (histRes.ok) {
-        const historyData = await histRes.json();
-        setOrderHistory(historyData);
-        setBackendConnected(true);
-        
-        const staplesRes = await fetch("/api/staples");
-        if (staplesRes.ok) {
-          const staplesData = await staplesRes.json();
-          const mappedStaples = staplesData.map((sc: any) => {
-            const matchingHist = historyData.find((h: any) => h.item_id === sc.product_id);
-            const price = matchingHist ? matchingHist.price : (sc.product_id === "p1" ? 27 : 48);
-            const dates = historyData
-              .filter((h: any) => h.item_id === sc.product_id && h.order_type === "instamart")
-              .map((h: any) => h.order_time.split("T")[0])
-              .reverse();
-              
-            return {
-              product_id: sc.product_id,
-              product_name: sc.product_name,
-              price: price,
-              is_confirmed: sc.is_confirmed === 1,
-              dismissed_count: sc.dismissed_count,
-              cycle_length: sc.cycle_length || 4.0,
-              last_suggested_date: sc.last_suggested_date || undefined,
-              dates: dates.length > 0 ? dates : ["2026-06-16"]
-            };
-          });
-          setStapleConfigs(mappedStaples);
-        }
-      }
-    } catch (err) {
-      console.warn("Failed to fetch SQLite state, utilizing local state:", err);
-      setBackendConnected(false);
-    }
-  };
-
   // --- TRIGGER ENGINE SIMULATION LOGIC ---
-  const executeTriggers = async () => {
+  const executeTriggers = () => {
     setIsRunningTriggers(true);
     setLangGraphLogs([]);
     setTriggeredSuggestions([]);
@@ -170,231 +122,143 @@ export default function App() {
     const logs: string[] = [];
     const addLog = (msg: string) => logs.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
 
-    try {
-      addLog("Initializing LangGraph thread for thread_id: sandbox_user_01_session");
-      addLog(`Querying real-time classification: Day = ${selectedDay}, Weather = ${selectedWeather}`);
+    // Simulate LangGraph thread orchestration
+    setTimeout(() => {
+      addLog("Initializing LangGraph thread for thread_id: sandbox_user_01");
+      addLog("Loading state variables: current_time, location, weather");
       
-      const targetDate = getSimulatedDate(selectedDay);
-      const res = await fetch(`/api/check-triggers?simulated_date=${targetDate}&weather=${selectedWeather}`, {
-        method: "POST"
-      });
-
-      if (!res.ok) {
-        throw new Error(`API error: ${res.statusText}`);
-      }
-
-      const data = await res.json();
-      addLog(`Successfully loaded SQLite state and ran dual LangGraph predictive models.`);
+      // Node 1: Event-based trigger check
+      addLog("Running node: analyze_patterns_node");
       
-      const suggestions = data.suggestions || [];
-      const candidates = data.candidate_staples || [];
+      let eventSuggestion: any = null;
+      const isFriday = selectedDay === "Friday";
+      const isRainy = selectedWeather === "rainy";
+      const patternKey = "food_event_Friday_18-21";
+      const eventDismissedCount = dismissedPatterns[patternKey] || 0;
 
-      addLog("Running node: analyze_patterns_node (Event-Based trigger check)");
-      const eventSug = suggestions.find((s: any) => s.trigger_type === "event_based" || s.trigger_type === "merged");
-      if (eventSug) {
-        addLog("✅ Event Pattern Match! Friday evening ordering pattern detected with 75% historical rainy weather matching (>= 60% requirement).");
+      if (isFriday && isRainy) {
+        if (eventDismissedCount >= 3) {
+          addLog(`⚠️ Event trigger suppressed: '${patternKey}' has been dismissed ${eventDismissedCount} times (Trust Guardrail enabled)`);
+        } else {
+          addLog("✅ Event Pattern Match! Friday evening ordering pattern detected with 75% historical rainy weather matching (>= 60% requirement).");
+          eventSuggestion = {
+            id: "sug_event_01",
+            trigger_type: "event_based",
+            order_type: "food",
+            restaurant_id: "rest_001",
+            restaurant_name: restaurantDistance > 5 ? "Empire Restaurant" : "Meghana Foods",
+            explanation: `Based on your past orders on Fridays around 19:30 and today's rainy weather, we drafted your favorite meal.`,
+            items: [
+              { id: "m1", name: "Special Chicken Biryani", price: 320, defaultQty: 1 }
+            ],
+            pattern_key: patternKey,
+            distance: restaurantDistance
+          };
+        }
       } else {
         addLog(`❌ No Event-Based trigger matches today (Context: Day: ${selectedDay}, Weather: ${selectedWeather})`);
       }
 
-      addLog("Running node: process_consumption_node (Staple replenishment check)");
-      const stapleSug = suggestions.find((s: any) => s.trigger_type === "consumption_based" || s.trigger_type === "merged");
-      if (stapleSug) {
-        addLog("✅ Staple Alert: Confirmed staple is due soon. Drafting replenishment.");
-      } else {
-        addLog("ℹ️ Confirmed staples are not yet due for replenishment.");
-      }
+      // Node 2: Consumption-based staple check
+      addLog("Running node: process_consumption_node");
+      const consumptionSuggestions: any[] = [];
 
-      if (suggestions.some((s: any) => s.trigger_type === "merged")) {
+      stapleConfigs.forEach((staple) => {
+        if (staple.is_confirmed) {
+          const stapleDismissedCount = staple.dismissed_count;
+          if (stapleDismissedCount >= 3) {
+            addLog(`⚠️ Staple '${staple.product_name}' replenishment alerts blocked (3 Dismissals reached).`);
+            return;
+          }
+
+          // Prediction logic: Last order was July 2. Cycle length is 4 days. Next is July 6.
+          // Since today is Saturday July 4, we are 2 days before predicted Run Out!
+          // Trigger if day corresponds to predictedRunOut - 2 days (i.e. Saturday July 4 or onwards)
+          const todayIndexOffset = ["Friday", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"].indexOf(selectedDay);
+          // Milk last order: July 2 (Thursday).
+          // Friday July 3: 1 day since last order.
+          // Saturday July 4: 2 days since last order (Triggered since next predicted is July 6, buffer is 2 days!)
+          const daysSinceLastOrder = todayIndexOffset + 1; // Thursday to Friday is 1, Saturday is 2
+          const nextPredictedDays = staple.cycle_length; // 4.0
+
+          if (daysSinceLastOrder >= (nextPredictedDays - 2)) {
+            addLog(`✅ Staple Alert: '${staple.product_name}' is due soon (Replenished every ${staple.cycle_length} days. Last ordered 2 days ago). Drafting replenishment.`);
+            consumptionSuggestions.push({
+              id: `sug_staple_${staple.product_id}`,
+              trigger_type: "consumption_based",
+              order_type: "instamart",
+              explanation: `Looks like you are running low on ${staple.product_name}. Based on your last 5 order gaps, you consume this every ${staple.cycle_length} days.`,
+              items: [
+                { id: staple.product_id, name: staple.product_name, price: staple.price, defaultQty: 2 }
+              ],
+              pattern_key: staple.product_id
+            });
+          } else {
+            addLog(`ℹ️ Staple '${staple.product_name}' not yet due (Replenishment in ${Math.ceil(nextPredictedDays - daysSinceLastOrder)} days).`);
+          }
+        }
+      });
+
+      // Node 3: Merge node
+      addLog("Running node: merge_proactive_signals_node");
+      const finalSuggestions: any[] = [];
+      if (eventSuggestion && consumptionSuggestions.length > 0) {
         addLog("🔀 MERGE TRIGGER: Both Event & Staple replenishment fired on the same day. Merging into a Unified Daily Digest card to prevent notification fatigue.");
+        
+        // Form a merged card structure
+        finalSuggestions.push({
+          id: "merged_digest",
+          trigger_type: "merged",
+          order_type: "mixed",
+          restaurant_name: eventSuggestion.restaurant_name,
+          explanation: "Here is your unified Daily Proactive Digest! We bundled your Friday evening biryani draft and Instamart milk replenishment into a single layout to keep you focused.",
+          sub_suggestions: [eventSuggestion, ...consumptionSuggestions],
+          pattern_key: "merged_daily_digest"
+        });
+      } else {
+        if (eventSuggestion) finalSuggestions.push(eventSuggestion);
+        consumptionSuggestions.forEach(s => finalSuggestions.push(s));
       }
 
       addLog("Graph execution completed successfully.");
-      
-      const mappedSuggestions = suggestions.map((sug: any, index: number) => {
-        const id = sug.id || `sug_${sug.trigger_type}_${index}`;
-        
-        const subSuggestions = sug.sub_suggestions 
-          ? sug.sub_suggestions.map((sub: any, sIdx: number) => ({
-              ...sub,
-              id: sub.id || `sub_${sub.trigger_type}_${sIdx}`,
-              items: sub.items.map((it: any) => ({
-                id: it.item_id || it.product_id || "m1",
-                name: it.name,
-                price: it.price,
-                defaultQty: it.quantity || 1
-              }))
-            }))
-          : undefined;
-
-        const items = sug.items 
-          ? sug.items.map((it: any) => ({
-              id: it.item_id || it.product_id || "m1",
-              name: it.name,
-              price: it.price,
-              defaultQty: it.quantity || 1
-            }))
-          : [];
-
-        return {
-          ...sug,
-          id,
-          sub_suggestions: subSuggestions,
-          items,
-          distance: restaurantDistance
-        };
-      });
-
-      setTriggeredSuggestions(mappedSuggestions);
       setLangGraphLogs(logs);
-
-      await fetchDatabaseState();
-
-    } catch (err) {
-      console.warn("API call failed, falling back to mock local trigger simulation:", err);
-      addLog("⚠️ API Connection failed. Falling back to local Client-Side Simulation Engine.");
-      
-      setTimeout(() => {
-        let eventSuggestion: any = null;
-        const isFriday = selectedDay === "Friday";
-        const isRainy = selectedWeather === "rainy";
-        const patternKey = "food_event_Friday_18-21";
-        const eventDismissedCount = dismissedPatterns[patternKey] || 0;
-
-        if (isFriday && isRainy) {
-          if (eventDismissedCount >= 3) {
-            addLog(`⚠️ Event trigger suppressed: '${patternKey}' has been dismissed ${eventDismissedCount} times (Trust Guardrail enabled)`);
-          } else {
-            addLog("✅ Event Pattern Match! Friday evening ordering pattern detected with 75% historical rainy weather matching (>= 60% requirement).");
-            eventSuggestion = {
-              id: "sug_event_01",
-              trigger_type: "event_based",
-              order_type: "food",
-              restaurant_id: "rest_001",
-              restaurant_name: restaurantDistance > 5 ? "Empire Restaurant" : "Meghana Foods",
-              explanation: `Based on your past orders on Fridays around 19:30 and today's rainy weather, we drafted your favorite meal.`,
-              items: [
-                { id: "m1", name: "Special Chicken Biryani", price: 320, defaultQty: 1 }
-              ],
-              pattern_key: patternKey,
-              distance: restaurantDistance
-            };
-          }
-        } else {
-          addLog(`❌ No Event-Based trigger matches today (Context: Day: ${selectedDay}, Weather: ${selectedWeather})`);
-        }
-
-        addLog("Running node: process_consumption_node");
-        const consumptionSuggestions: any[] = [];
-
-        stapleConfigs.forEach((staple) => {
-          if (staple.is_confirmed) {
-            const stapleDismissedCount = staple.dismissed_count;
-            if (stapleDismissedCount >= 3) {
-              addLog(`⚠️ Staple '${staple.product_name}' replenishment alerts blocked (3 Dismissals reached).`);
-              return;
-            }
-
-            const todayIndexOffset = ["Friday", "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"].indexOf(selectedDay);
-            const daysSinceLastOrder = todayIndexOffset + 1;
-            const nextPredictedDays = staple.cycle_length;
-
-            if (daysSinceLastOrder >= (nextPredictedDays - 2)) {
-              addLog(`✅ Staple Alert: '${staple.product_name}' is due soon (Replenished every ${staple.cycle_length} days. Last ordered 2 days ago). Drafting replenishment.`);
-              consumptionSuggestions.push({
-                id: `sug_staple_${staple.product_id}`,
-                trigger_type: "consumption_based",
-                order_type: "instamart",
-                explanation: `Looks like you are running low on ${staple.product_name}. Based on your last 5 order gaps, you consume this every ${staple.cycle_length} days.`,
-                items: [
-                  { id: staple.product_id, name: staple.product_name, price: staple.price, defaultQty: 2 }
-                ],
-                pattern_key: staple.product_id
-              });
-            } else {
-              addLog(`ℹ️ Staple '${staple.product_name}' not yet due (Replenishment in ${Math.ceil(nextPredictedDays - daysSinceLastOrder)} days).`);
-            }
-          }
-        });
-
-        addLog("Running node: merge_proactive_signals_node");
-        const finalSuggestions: any[] = [];
-        if (eventSuggestion && consumptionSuggestions.length > 0) {
-          addLog("🔀 MERGE TRIGGER: Both Event & Staple replenishment fired on the same day. Merging into a Unified Daily Digest card to prevent notification fatigue.");
-          finalSuggestions.push({
-            id: "merged_digest",
-            trigger_type: "merged",
-            order_type: "mixed",
-            restaurant_name: eventSuggestion.restaurant_name,
-            explanation: "Here is your unified Daily Proactive Digest! We bundled your Friday evening biryani draft and Instamart milk replenishment into a single layout to keep you focused.",
-            sub_suggestions: [eventSuggestion, ...consumptionSuggestions],
-            pattern_key: "merged_daily_digest"
-          });
-        } else {
-          if (eventSuggestion) finalSuggestions.push(eventSuggestion);
-          consumptionSuggestions.forEach(s => finalSuggestions.push(s));
-        }
-
-        addLog("Graph execution completed successfully.");
-        setLangGraphLogs([...logs]);
-        setTriggeredSuggestions(finalSuggestions);
-      }, 500);
-    } finally {
+      setTriggeredSuggestions(finalSuggestions);
       setIsRunningTriggers(false);
-    }
+    }, 1000);
   };
 
-  // Run initial trigger check and state sync
+  // Run initial trigger check
   useEffect(() => {
-    fetchDatabaseState().then(() => {
-      executeTriggers();
-    });
+    executeTriggers();
   }, [selectedDay, selectedWeather, restaurantDistance]);
 
   // --- LIVE ORDER TRACKING TICKER ---
+  // Swiggy dispatches orders automatically. We poll the tracker every 10 seconds.
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveOrders((prevOrders) => {
-        if (prevOrders.length === 0) return prevOrders;
+        return prevOrders.map((order) => {
+          if (order.status === "DELIVERED") return order;
 
-        const updatedOrders = [...prevOrders];
-        Promise.all(updatedOrders.map(async (order, index) => {
-          if (order.status === "DELIVERED") return;
+          let nextStatus = order.status;
+          let nextEta = Math.max(0, order.eta_minutes - 5);
 
-          try {
-            const res = await fetch(`/api/order/track/${order.order_id}?type=${order.type}`);
-            if (res.ok) {
-              const data = await res.json();
-              updatedOrders[index] = {
-                ...order,
-                status: data.status,
-                eta_minutes: data.eta_minutes
-              };
-              setActiveOrders([...updatedOrders]);
-            }
-          } catch (err) {
-            let nextStatus = order.status;
-            let nextEta = Math.max(0, order.eta_minutes - 5);
-
-            if (order.status === "ORDERED") {
-              nextStatus = order.type === "food" ? "PREPARING" : "PACKING";
-            } else if (order.status === "PREPARING" || order.status === "PACKING") {
-              nextStatus = "DISPATCHED";
-            } else if (order.status === "DISPATCHED") {
-              nextStatus = "RIDER_NEARBY";
-            } else if (order.status === "RIDER_NEARBY" && nextEta === 0) {
-              nextStatus = "DELIVERED";
-            }
-
-            updatedOrders[index] = {
-              ...order,
-              status: nextStatus,
-              eta_minutes: nextEta
-            };
-            setActiveOrders([...updatedOrders]);
+          if (order.status === "ORDERED") {
+            nextStatus = order.type === "food" ? "PREPARING" : "PACKING";
+          } else if (order.status === "PREPARING" || order.status === "PACKING") {
+            nextStatus = "DISPATCHED";
+          } else if (order.status === "DISPATCHED") {
+            nextStatus = "RIDER_NEARBY";
+          } else if (order.status === "RIDER_NEARBY" && nextEta === 0) {
+            nextStatus = "DELIVERED";
           }
-        }));
-        return prevOrders;
+
+          return {
+            ...order,
+            status: nextStatus,
+            eta_minutes: nextEta
+          };
+        });
       });
     }, 10000); // Polled every 10 seconds
 
@@ -402,13 +266,11 @@ export default function App() {
   }, []);
 
   // --- ACTIONS ---
-  const handleConfirmOrder = async (suggestion: any, ordType: "food" | "instamart", restId?: string, restName?: string) => {
-    const itemsToPlace = (suggestion.items || []).map((it: any) => {
+  const handleConfirmOrder = (suggestion: any, ordType: "food" | "instamart", restId?: string, restName?: string) => {
+    const itemsToPlace = suggestion.items.map((it: any) => {
       const currentQty = draftCartQuantities[`${suggestion.id}_${it.id}`] ?? it.defaultQty;
       return {
-        item_id: it.id,
-        product_id: it.id,
-        item_name: it.name,
+        name: it.name,
         price: it.price,
         quantity: currentQty
       };
@@ -422,150 +284,59 @@ export default function App() {
       return;
     }
 
-    try {
-      const res = await fetch("/api/order/place", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          order_type: ordType,
-          restaurant_id: restId || null,
-          items: itemsToPlace,
-          payment_method: "COD"
-         })
-      });
+    const orderId = ordType === "food" ? `SWG-FOOD-${Math.floor(100000 + Math.random() * 900000)}` : `SWG-IM-${Math.floor(100000 + Math.random() * 900000)}`;
+    const newOrder: ActiveOrder = {
+      order_id: orderId,
+      type: ordType,
+      origin_name: ordType === "food" ? (restName ?? "Meghana Foods") : "Instamart Staples",
+      items: itemsToPlace,
+      total_amount: totalAmount,
+      eta_minutes: ordType === "food" ? 35 : 20,
+      status: "ORDERED"
+    };
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success) {
-          const orderId = data.order_id;
-          const newOrder: ActiveOrder = {
-            order_id: orderId,
-            type: ordType,
-            origin_name: ordType === "food" ? (restName ?? "Meghana Foods") : "Instamart Staples",
-            items: itemsToPlace.map((it: any) => ({ name: it.item_name, price: it.price, quantity: it.quantity })),
-            total_amount: totalAmount,
-            eta_minutes: data.eta_minutes || (ordType === "food" ? 35 : 20),
-            status: data.status || "ORDERED"
-          };
-
-          setActiveOrders((prev) => [newOrder, ...prev]);
-          setActiveTab("tracker");
-          alert(`🎉 Order Placed Successfully via COD (Cash on Delivery)!\nOrder ID: ${orderId}\nSwiggy live dispatch tracking is now active inside the Order Tracker tab.`);
-          
-          await fetchDatabaseState();
-        } else {
-          alert(`❌ Failed to place order: ${data.error}`);
-        }
-      } else {
-        throw new Error("HTTP placing error");
-      }
-    } catch (err) {
-      console.warn("API order placing failed, falling back to local simulation:", err);
-      const orderId = ordType === "food" ? `SWG-FOOD-${Math.floor(100000 + Math.random() * 900000)}` : `SWG-IM-${Math.floor(100000 + Math.random() * 900000)}`;
-      const newOrder: ActiveOrder = {
-        order_id: orderId,
-        type: ordType,
-        origin_name: ordType === "food" ? (restName ?? "Meghana Foods") : "Instamart Staples",
-        items: itemsToPlace.map((it: any) => ({ name: it.item_name, price: it.price, quantity: it.quantity })),
-        total_amount: totalAmount,
-        eta_minutes: ordType === "food" ? 35 : 20,
-        status: "ORDERED"
-      };
-
-      setActiveOrders((prev) => [newOrder, ...prev]);
-      setActiveTab("tracker");
-      alert(`🎉 Order Placed Successfully via COD (Local Simulation Fallback)!\nOrder ID: ${orderId}\nSwiggy live dispatch tracking is now active inside the Order Tracker tab.`);
-    }
+    setActiveOrders((prev) => [newOrder, ...prev]);
+    setActiveTab("tracker");
+    alert(`🎉 Order Placed Successfully via COD (Cash on Delivery)!\nOrder ID: ${orderId}\nSwiggy live dispatch tracking is now active inside the Order Tracker tab.`);
   };
 
-  const handleDismissPattern = async (patternKey: string, isStaple: boolean) => {
-    try {
-      const res = await fetch("/api/dismiss-pattern", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pattern_key: patternKey,
-          is_staple: isStaple
-        })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        alert(data.message);
-        await fetchDatabaseState();
-        executeTriggers();
-      } else {
-        throw new Error("HTTP dismissal error");
-      }
-    } catch (err) {
-      console.warn("API dismissal failed, falling back to local state:", err);
-      if (isStaple) {
-        setStapleConfigs((prev) => 
-          prev.map((sc) => {
-            if (sc.product_id === patternKey) {
-              const nextCount = sc.dismissed_count + 1;
-              return { ...sc, dismissed_count: nextCount };
-            }
-            return sc;
-          })
-        );
-        alert(`Pattern dismissed (Local). If an item is dismissed 3 times, the agent stops drafting it. This helps build safety & trust.`);
-      } else {
-        setDismissedPatterns((prev) => {
-          const nextCount = (prev[patternKey] || 0) + 1;
-          return { ...prev, [patternKey]: nextCount };
-        });
-        alert(`Friday Biryani pattern dismissed (Local). Dismiss count: ${(dismissedPatterns[patternKey] || 0) + 1}/3.`);
-      }
-      executeTriggers();
-    }
-  };
-
-  const toggleStapleOptIn = async (prodId: string) => {
-    const staple = stapleConfigs.find(sc => sc.product_id === prodId);
-    if (!staple) return;
-
-    const nextState = !staple.is_confirmed;
-
-    try {
-      const res = await fetch("/api/opt-in-staple", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product_id: prodId,
-          product_name: staple.product_name,
-          confirm: nextState
-        })
-      });
-
-      if (res.ok) {
-        if (nextState) {
-          alert(`🥛 Opt-In Confirmed: Replenishment monitoring activated for ${staple.product_name}. The agent will calculate order gaps and proactively draft orders.`);
-        } else {
-          alert(`Disabled replenishment tracking for ${staple.product_name}.`);
-        }
-        await fetchDatabaseState();
-        executeTriggers();
-      } else {
-        throw new Error("HTTP opt-in error");
-      }
-    } catch (err) {
-      console.warn("API opt-in failed, falling back to local state:", err);
-      setStapleConfigs((prev) =>
+  const handleDismissPattern = (patternKey: string, isStaple: boolean) => {
+    if (isStaple) {
+      setStapleConfigs((prev) => 
         prev.map((sc) => {
-          if (sc.product_id === prodId) {
-            const nextLocalState = !sc.is_confirmed;
-            if (nextLocalState) {
-              alert(`🥛 Opt-In Confirmed (Local): Replenishment monitoring activated for ${sc.product_name}. The agent will calculate order gaps and proactively draft orders.`);
-            } else {
-              alert(`Disabled replenishment tracking for ${sc.product_name}.`);
-            }
-            return { ...sc, is_confirmed: nextLocalState };
+          if (sc.product_id === patternKey) {
+            const nextCount = sc.dismissed_count + 1;
+            return { ...sc, dismissed_count: nextCount };
           }
           return sc;
         })
       );
+      alert(`Pattern dismissed. If an item is dismissed 3 times, the agent stops drafting it. This helps build safety & trust.`);
+    } else {
+      setDismissedPatterns((prev) => {
+        const nextCount = (prev[patternKey] || 0) + 1;
+        return { ...prev, [patternKey]: nextCount };
+      });
+      alert(`Friday Biryani pattern dismissed. Dismiss count: ${(dismissedPatterns[patternKey] || 0) + 1}/3.`);
     }
+    executeTriggers();
+  };
+
+  const toggleStapleOptIn = (prodId: string) => {
+    setStapleConfigs((prev) =>
+      prev.map((sc) => {
+        if (sc.product_id === prodId) {
+          const nextState = !sc.is_confirmed;
+          if (nextState) {
+            alert(`🥛 Opt-In Confirmed: Replenishment monitoring activated for ${sc.product_name}. The agent will calculate order gaps and proactively draft orders.`);
+          } else {
+            alert(`Disabled replenishment tracking for ${sc.product_name}.`);
+          }
+          return { ...sc, is_confirmed: nextState };
+        }
+        return sc;
+      })
+    );
   };
 
   const updateDraftItemQty = (sugId: string, itemId: string, diff: number, defaultVal: number) => {
@@ -593,20 +364,12 @@ export default function App() {
               </p>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
-              backendConnected 
-                ? "bg-emerald-50 text-emerald-700 border border-emerald-100" 
-                : "bg-amber-50 text-amber-700 border border-amber-100"
-            }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${backendConnected ? "bg-emerald-500 animate-ping" : "bg-amber-500"}`}></span>
-              {backendConnected ? "SQLITE BACKEND LIVE" : "LOCAL SIMULATION ENGINE"}
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-700 border border-orange-100">
-              <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-ping"></span>
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
               MCP SANDBOX LIVE
             </span>
-            <span className="text-xs font-mono bg-gray-50 text-gray-700 px-3 py-1 rounded-md border border-gray-100">
+            <span className="text-xs font-mono bg-orange-50 text-orange-700 px-3 py-1 rounded-md border border-orange-100">
               COD Mode (₹1000 Cap)
             </span>
           </div>

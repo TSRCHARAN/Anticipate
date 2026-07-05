@@ -1,0 +1,5 @@
+[
+  "backend/tests/test_trigger_logic.py::test_consumption_trigger_rolling_average",
+  "backend/tests/test_trigger_logic.py::test_event_trigger_success_flow",
+  "backend/tests/test_trigger_logic.py::test_event_trigger_weather_mismatch"
+]
