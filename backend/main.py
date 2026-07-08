@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from db.db import init_db, get_all_order_history, update_staple_config, get_staple_config, update_pattern_dismissal, get_pattern_dismissal, get_all_staple_configs
@@ -11,6 +12,14 @@ from scheduler.daily_check import ProactiveDailyScheduler
 app = FastAPI(
     title="Swiggy Proactive Ordering Agent - Builders Club",
     description="API layer of the proactive order suggestion system built with LangGraph, FastAPI, and SQLite."
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Initialize database on startup
